@@ -1,0 +1,143 @@
+# Certificate Authenticity Verification System — Implementation Plan
+
+Build a full-stack web application that automatically detects tampered or edited certificates by comparing uploaded certificate data with official verification sources.
+
+## Proposed Changes
+
+### Backend — Python Flask API
+
+#### [NEW] [requirements.txt](file:///N:/Verify/backend/requirements.txt)
+Dependencies: `flask`, `flask-cors`, `pytesseract`, `PyMuPDF (fitz)`, `Pillow`, `opencv-python`, `pyzbar`, `beautifulsoup4`, `requests`, `playwright`, `python-dotenv`, `werkzeug`
+
+---
+
+#### [NEW] [app.py](file:///N:/Verify/backend/app.py)
+Flask application entry point:
+- Configure CORS, upload folder, and max file size (16 MB)
+- Register API blueprint
+- Serve uploaded files
+
+#### [NEW] [routes.py](file:///N:/Verify/backend/routes.py)
+API routes:
+- `POST /api/verify` — accepts PDF/image upload, runs full pipeline, returns JSON result
+- `GET /api/history` — returns in-memory verification history
+- `GET /api/history/<id>` — returns a single past result
+
+---
+
+#### [NEW] [extractor.py](file:///N:/Verify/backend/extractor.py)
+Text extraction module:
+- `extract_text_from_pdf(path)` — uses PyMuPDF to get embedded text; falls back to OCR
+- `extract_text_from_image(path)` — uses Tesseract OCR via `pytesseract`
+- `extract_fields(text)` — regex + heuristic parsing to pull **name, course, institution, date, certificate ID, verification URL**
+
+#### [NEW] [qr_detector.py](file:///N:/Verify/backend/qr_detector.py)
+QR code module:
+- `detect_qr(image_path)` — uses `pyzbar` + OpenCV to find and decode QR codes
+- Returns list of decoded URLs
+
+#### [NEW] [scraper.py](file:///N:/Verify/backend/scraper.py)
+Web scraping module:
+- `fetch_official_data(url)` — uses `requests` + BeautifulSoup for static pages
+- Falls back to Playwright for JS-rendered pages
+- Extracts official name, course, institution, date, certificate ID from verification page
+- Platform-specific parsers for Coursera, Udemy, edX, LinkedIn Learning
+
+#### [NEW] [comparator.py](file:///N:/Verify/backend/comparator.py)
+Comparison engine:
+- `compare_fields(uploaded, official)` — field-by-field comparison (name, course, institution, date, ID)
+- Uses fuzzy string matching (`difflib.SequenceMatcher`) to handle minor OCR inaccuracies
+- Returns per-field match/mismatch details + overall authenticity score (0–100%)
+
+#### [NEW] [tampering.py](file:///N:/Verify/backend/tampering.py)
+Image tampering detection:
+- `analyze_tampering(image_path)` — runs multiple checks:
+  - **ELA (Error Level Analysis)** — resave at known quality, amplify difference to reveal edits
+  - **Metadata analysis** — check for Photoshop/editor signatures in EXIF
+  - **Font consistency** — basic variance check across text regions
+- Returns tampering indicators with confidence levels
+
+---
+
+### Frontend — React + Vite
+
+#### [NEW] [package.json](file:///N:/Verify/frontend/package.json)
+Vite React project with dependencies: `react-dropzone`, `framer-motion`, `lucide-react`, `axios`
+
+#### [NEW] [index.html](file:///N:/Verify/frontend/index.html)
+HTML shell with Google Fonts (Inter) and meta tags
+
+#### [NEW] [src/main.jsx](file:///N:/Verify/frontend/src/main.jsx)
+React entry point, renders `<App />`
+
+#### [NEW] [src/App.jsx](file:///N:/Verify/frontend/src/App.jsx)
+Root component with client-side routing (hash-based):
+- `/` → Upload page
+- `/result` → Results dashboard
+- `/history` → Verification history
+
+#### [NEW] [src/index.css](file:///N:/Verify/frontend/src/index.css)
+Design system:
+- CSS variables for colors, gradients, shadows, typography
+- Dark theme by default with light mode toggle
+- Glassmorphism card styles, animated gradients, smooth transitions
+
+#### [NEW] [src/components/Header.jsx](file:///N:/Verify/frontend/src/components/Header.jsx)
+Fixed top bar with logo, navigation, and dark/light toggle
+
+#### [NEW] [src/components/UploadZone.jsx](file:///N:/Verify/frontend/src/components/UploadZone.jsx)
+Drag-and-drop upload area (using `react-dropzone`):
+- Accepts PDF, JPG, PNG
+- File preview, size validation
+- Animated border on hover/drag
+
+#### [NEW] [src/components/ProgressTracker.jsx](file:///N:/Verify/frontend/src/components/ProgressTracker.jsx)
+Step-by-step progress indicator:
+- Steps: Upload → Text Extraction → URL Detection → Fetching Official Data → Comparison → Result
+- Animated transitions between steps, checkmarks on completion
+
+#### [NEW] [src/components/ResultDashboard.jsx](file:///N:/Verify/frontend/src/components/ResultDashboard.jsx)
+Main results view:
+- Authenticity score gauge (animated circular progress)
+- Status badge (Verified / Tampered / Unverifiable)
+- Field-by-field comparison table with color-coded match/mismatch
+- Tampering analysis indicators
+- Downloadable report (JSON summary)
+
+#### [NEW] [src/components/HistoryList.jsx](file:///N:/Verify/frontend/src/components/HistoryList.jsx)
+Verification history table with timestamp, filename, score, and status
+
+#### [NEW] [src/components/ScoreGauge.jsx](file:///N:/Verify/frontend/src/components/ScoreGauge.jsx)
+Animated SVG circular gauge for the authenticity score (0–100%)
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Tesseract OCR** must be installed on your system for OCR to work. On Windows: download the installer from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki). The backend will look for it at the default install path.
+
+> [!WARNING]
+> **Web scraping of real verification pages** (Coursera, Udemy, etc.) depends on those sites' current HTML structure. Scrapers may break if sites change. For the demo, we will include mock/simulated verification data so the project works end-to-end without external dependencies.
+
+> [!NOTE]
+> **Playwright** requires a one-time browser install command: `playwright install chromium`. This is only needed if scraping JS-heavy verification pages.
+
+## Verification Plan
+
+### Automated Tests
+1. **Backend unit test** — `python -m pytest backend/tests/` covering:
+   - Text extraction from a sample PDF and image
+   - URL regex extraction
+   - Field comparison logic and scoring
+   - QR detection on a test image
+2. **Frontend build** — `cd N:\Verify\frontend && npm run build` to confirm no build errors
+
+### Browser Verification
+1. Start backend: `cd N:\Verify\backend && python app.py`
+2. Start frontend: `cd N:\Verify\frontend && npm run dev`
+3. Open the app in the browser
+4. Upload a sample certificate (we will include a test PDF)
+5. Verify the progress tracker animates through each step
+6. Confirm the results dashboard shows the authenticity score, field comparison, and tampering indicators
+7. Check the history page records the verification

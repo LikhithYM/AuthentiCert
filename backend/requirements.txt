@@ -1,0 +1,15 @@
+flask==3.0.0
+flask-cors==4.0.0
+pytesseract==0.3.10
+PyMuPDF==1.23.8
+Pillow==10.2.0
+opencv-python==4.9.0.80
+pyzbar==0.1.9
+beautifulsoup4==4.12.2
+requests==2.31.0
+python-dotenv==1.0.0
+werkzeug==3.0.1
+lxml==5.1.0
+numpy==1.26.3
+
+reportlab==4.1.0
