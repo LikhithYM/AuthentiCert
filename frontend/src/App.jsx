@@ -12,13 +12,14 @@ import './App.css'
 const API_BASE = 'http://127.0.0.1:5000/api'
 
 const STEPS = [
-  { id: 'upload', label: 'Upload' },
-  { id: 'extraction', label: 'Text Extraction' },
-  { id: 'url_detection', label: 'URL Detection' },
-  { id: 'official_fetch', label: 'Fetching Official Data' },
-  { id: 'comparison', label: 'Comparing' },
-  { id: 'tampering', label: 'Tampering Analysis' },
-  { id: 'result', label: 'Result' },
+  { id: 'upload',           label: 'Upload'                },
+  { id: 'extraction',       label: 'Text Extraction'       },
+  { id: 'url_detection',    label: 'URL Detection'         },
+  { id: 'official_fetch',   label: 'Fetching Official Data'},
+  { id: 'comparison',       label: 'Comparing Fields'      },
+  { id: 'image_comparison', label: 'Image Comparison'      },
+  { id: 'tampering',        label: 'Tampering Analysis'    },
+  { id: 'result',           label: 'Result'                },
 ]
 
 function App() {
@@ -67,8 +68,9 @@ function App() {
       await stepDelay(2) // url detection
       await stepDelay(3) // official fetch
       await stepDelay(4) // comparison
-      await stepDelay(5) // tampering
-      await stepDelay(6) // result
+      await stepDelay(5) // image comparison
+      await stepDelay(6) // tampering
+      await stepDelay(7) // result
 
       setResult(response.data)
       setPage('result')
@@ -108,6 +110,7 @@ function App() {
       await stepDelay(4)
       await stepDelay(5)
       await stepDelay(6)
+      await stepDelay(7)
 
       setBulkResult(response.data)
       setPage('bulk-result')

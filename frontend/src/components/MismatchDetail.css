@@ -1,0 +1,203 @@
+.mismatch-detail {
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 0.8125rem;
+}
+
+/* ── Score breakdown ───────────────────────────────────────────── */
+.score-breakdown {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.score-bar-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 52px;
+    align-items: center;
+    gap: 10px;
+}
+
+.score-bar-row.primary .score-bar-label { font-weight: 700; }
+.score-bar-row.primary .score-bar-value { font-weight: 700; font-size: 0.875rem; }
+.score-bar-row.primary .score-bar-fill  { height: 8px; border-radius: 4px; }
+
+.score-bar-label { color: var(--text-secondary); font-size: 0.75rem; }
+
+.score-bar-track {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+.score-bar-unavail {
+    height: 100%;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.06) 0, rgba(255,255,255,0.06) 4px,
+        transparent 4px, transparent 8px
+    );
+}
+
+.score-bar-value {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: right;
+    min-width: 44px;
+}
+
+/* ── Banners ────────────────────────────────────────────────────── */
+.mismatch-summary-banner,
+.mismatch-none-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.mismatch-summary-banner {
+    background: rgba(239, 68, 68, 0.08);
+    border-top: 1px solid rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+.mismatch-none-banner {
+    background: rgba(16, 185, 129, 0.08);
+    border-top: 1px solid rgba(16, 185, 129, 0.15);
+    color: #6ee7b7;
+}
+
+.mismatch-icon { font-size: 1rem; }
+
+.expand-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.expand-btn:hover { background: rgba(239, 68, 68, 0.12); }
+
+/* ── Mismatch rows ──────────────────────────────────────────────── */
+.mismatch-rows {
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(239, 68, 68, 0.04);
+    border-top: 1px solid rgba(239, 68, 68, 0.1);
+}
+
+.mismatch-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 20px 1fr;
+    align-items: start;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(239, 68, 68, 0.14);
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.mismatch-field-name {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding-top: 2px;
+}
+
+.mismatch-label {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+}
+
+.mismatch-uploaded {
+    color: #fca5a5;
+}
+.mismatch-uploaded .mismatch-label { color: #f87171; }
+
+.mismatch-arrow {
+    color: var(--text-muted);
+    text-align: center;
+    padding-top: 14px;
+}
+
+.mismatch-official {
+    color: #6ee7b7;
+}
+.mismatch-official .mismatch-label { color: #34d399; }
+
+/* ── Full comparison table ──────────────────────────────────────── */
+.comp-table-wrapper {
+    overflow-x: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.775rem;
+}
+
+.comp-table th {
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.comp-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.comp-table tr.row-mismatch { background: rgba(239, 68, 68, 0.07); }
+.comp-table tr.row-match    { background: rgba(16, 185, 129, 0.05); }
+
+.field-name-cell {
+    font-weight: 600;
+    text-transform: capitalize;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.val-bad  { color: #fca5a5; }
+.val-good { color: #6ee7b7; }
+
+.match-cell, .sim-cell {
+    text-align: center;
+    font-weight: 600;
+}
+
+.match-yes { color: #10b981; font-size: 1rem; }
+.match-no  { color: #ef4444; font-size: 1rem; }
+.match-na  { color: #f59e0b; }

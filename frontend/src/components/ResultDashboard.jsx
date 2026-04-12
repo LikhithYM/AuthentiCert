@@ -1,17 +1,28 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
     ArrowLeft, ShieldCheck, ShieldAlert, ShieldQuestion, ShieldX,
-    Check, X, AlertTriangle, Download, Eye
+    Check, X, AlertTriangle, Download, Eye, BarChart2
 } from 'lucide-react'
 import ScoreGauge from './ScoreGauge'
+import MismatchDetail from './MismatchDetail'
 import './ResultDashboard.css'
+import axios from 'axios'
+
+const API_BASE = 'http://127.0.0.1:5000/api'
 
 const STATUS_CONFIG = {
-    verified: {
+    authentic: {
         icon: ShieldCheck,
-        label: 'Verified',
-        badgeClass: 'badge-success',
+        label: 'Authentic',
+        badgeClass: 'badge-authentic',
         color: 'var(--success)',
+    },
+    valid: {
+        icon: ShieldCheck,
+        label: 'Valid (Minor Differences)',
+        badgeClass: 'badge-valid',
+        color: '#0ea5e9',
     },
     suspicious: {
         icon: ShieldAlert,
@@ -21,7 +32,7 @@ const STATUS_CONFIG = {
     },
     tampered: {
         icon: ShieldX,
-        label: 'Tampered',
+        label: 'Tampered / Invalid',
         badgeClass: 'badge-danger',
         color: 'var(--danger)',
     },
@@ -40,23 +51,48 @@ const STATUS_CONFIG = {
 }
 
 function ResultDashboard({ result, onBack }) {
-    const statusConf = STATUS_CONFIG[result.final_status] || STATUS_CONFIG.error
-    const StatusIcon = statusConf.icon
+    const [downloadingPdf, setDownloadingPdf] = useState(false)
+
+    const statusConf  = STATUS_CONFIG[result.final_status] || STATUS_CONFIG.error
+    const StatusIcon  = statusConf.icon
 
     const extractedFields = result.steps?.extraction?.fields || {}
-    const officialData = result.steps?.official_fetch?.data || {}
-    const comparisonFields = result.steps?.comparison?.fields || []
-    const tamperingData = result.steps?.tampering || {}
+    const officialData    = result.steps?.official_fetch?.data || {}
+    const comparisonData  = result.steps?.comparison || {}
+    const compFields      = comparisonData.fields || []
+    const tamperingData   = result.steps?.tampering || {}
+    const mismatches      = result.mismatches || []
+    const breakdown       = result.score_breakdown || {}
 
-    const handleDownload = () => {
+    const handleDownloadJson = () => {
         const data = JSON.stringify(result, null, 2)
         const blob = new Blob([data], { type: 'application/json' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
+        const url  = URL.createObjectURL(blob)
+        const a    = document.createElement('a')
+        a.href     = url
         a.download = `verification_${result.id?.slice(0, 8) || 'report'}.json`
         a.click()
         URL.revokeObjectURL(url)
+    }
+
+    const handleDownloadPdf = async () => {
+        setDownloadingPdf(true)
+        try {
+            const response = await axios.post(`${API_BASE}/report/single`, result, {
+                responseType: 'blob',
+            })
+            const url  = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href  = url
+            link.setAttribute('download', `AuthentiCert_${result.id?.slice(0, 8)}.pdf`)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+        } catch {
+            alert('Failed to download PDF report')
+        } finally {
+            setDownloadingPdf(false)
+        }
     }
 
     return (
@@ -66,12 +102,21 @@ function ResultDashboard({ result, onBack }) {
                 <button className="btn btn-outline" onClick={onBack}>
                     <ArrowLeft size={16} /> New Verification
                 </button>
-                <button className="btn btn-outline" onClick={handleDownload}>
-                    <Download size={16} /> Download Report
-                </button>
+                <div className="result-header-actions">
+                    <button className="btn btn-outline" onClick={handleDownloadJson}>
+                        <Download size={16} /> JSON
+                    </button>
+                    <button
+                        className="btn btn-primary-sm"
+                        onClick={handleDownloadPdf}
+                        disabled={downloadingPdf}
+                    >
+                        <Download size={16} /> {downloadingPdf ? 'Generating…' : 'PDF Report'}
+                    </button>
+                </div>
             </div>
 
-            {/* Score + Status */}
+            {/* Hero — Score + Status */}
             <motion.div
                 className="result-hero glass-card"
                 initial={{ opacity: 0, y: 20 }}
@@ -80,7 +125,7 @@ function ResultDashboard({ result, onBack }) {
             >
                 <div className="result-hero-content">
                     <div className="result-score-section">
-                        <ScoreGauge score={result.final_score} status={result.final_status} />
+                        <ScoreGauge score={breakdown.match_score ?? result.final_score} status={result.final_status} />
                     </div>
                     <div className="result-status-section">
                         <div className={`badge ${statusConf.badgeClass}`}>
@@ -95,8 +140,8 @@ function ResultDashboard({ result, onBack }) {
                 </div>
             </motion.div>
 
-            {/* Comparison Table */}
-            {comparisonFields.length > 0 && (
+            {/* Score Breakdown + Mismatch Panel */}
+            {(compFields.length > 0 || mismatches.length > 0) && (
                 <motion.div
                     className="result-section glass-card"
                     initial={{ opacity: 0, y: 20 }}
@@ -104,42 +149,54 @@ function ResultDashboard({ result, onBack }) {
                     transition={{ delay: 0.2 }}
                 >
                     <h3 className="section-title">
-                        <Eye size={18} /> Field Comparison
+                        <BarChart2 size={18} /> Comparison Analysis
                     </h3>
-                    <div className="comparison-table-wrapper">
-                        <table className="comparison-table">
-                            <thead>
-                                <tr>
-                                    <th>Field</th>
-                                    <th>Uploaded Certificate</th>
-                                    <th>Official Record</th>
-                                    <th>Match</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {comparisonFields.map((field, i) => (
-                                    <tr key={i} className={field.match === false ? 'row-mismatch' : field.match === true ? 'row-match' : ''}>
-                                        <td className="field-name">{field.field}</td>
-                                        <td>{field.uploaded}</td>
-                                        <td>{field.official}</td>
-                                        <td className="match-cell">
-                                            {field.match === true && (
-                                                <span className="match-icon match-yes"><Check size={14} /></span>
-                                            )}
-                                            {field.match === false && (
-                                                <span className="match-icon match-no"><X size={14} /></span>
-                                            )}
-                                            {field.match === null && (
-                                                <span className="match-icon match-na"><AlertTriangle size={14} /></span>
-                                            )}
-                                            {field.similarity !== null && field.similarity !== undefined && (
-                                                <span className="similarity">{Math.round(field.similarity * 100)}%</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <MismatchDetail
+                        mismatches={mismatches}
+                        compFields={compFields}
+                        matchScore={breakdown.match_score}
+                        textScore={breakdown.text_score}
+                        fieldScore={breakdown.field_score}
+                        imageScore={breakdown.image_score}
+                        collapsible={false}
+                    />
+                </motion.div>
+            )}
+
+            {/* Image Similarity (if available) */}
+            {comparisonData.image_score != null && (
+                <motion.div
+                    className="result-section glass-card"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                >
+                    <h3 className="section-title">🖼️ Image Comparison</h3>
+                    <div className="image-comparison-row">
+                        <div className="img-score-card">
+                            <div className="img-score-value" style={{
+                                color: comparisonData.image_score >= 85 ? '#10b981'
+                                     : comparisonData.image_score >= 60 ? '#f59e0b'
+                                     : '#ef4444'
+                            }}>
+                                {comparisonData.image_score?.toFixed(1)}%
+                            </div>
+                            <div className="img-score-label">Image Similarity (SSIM)</div>
+                        </div>
+                        {comparisonData.mismatch_regions?.length > 0 && (
+                            <div className="img-regions">
+                                <span className="img-regions-label">
+                                    {comparisonData.mismatch_regions.length} mismatch region{comparisonData.mismatch_regions.length > 1 ? 's' : ''} detected
+                                </span>
+                                <div className="img-region-list">
+                                    {comparisonData.mismatch_regions.slice(0, 5).map((r, i) => (
+                                        <span key={i} className="img-region-tag">
+                                            {r.description || `Region (${r.x},${r.y})`}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </motion.div>
             )}
@@ -153,12 +210,14 @@ function ResultDashboard({ result, onBack }) {
             >
                 <h3 className="section-title">📝 Extracted Certificate Data</h3>
                 <div className="data-grid">
-                    {Object.entries(extractedFields).filter(([k]) => k !== 'raw_text').map(([key, value]) => (
-                        <div key={key} className="data-item">
-                            <span className="data-key">{key.replace(/_/g, ' ')}</span>
-                            <span className="data-value">{value || '—'}</span>
-                        </div>
-                    ))}
+                    {Object.entries(extractedFields)
+                        .filter(([k]) => k !== 'raw_text')
+                        .map(([key, value]) => (
+                            <div key={key} className="data-item">
+                                <span className="data-key">{key.replace(/_/g, ' ')}</span>
+                                <span className="data-value">{value || '—'}</span>
+                            </div>
+                        ))}
                 </div>
             </motion.div>
 
@@ -177,7 +236,9 @@ function ResultDashboard({ result, onBack }) {
                         {tamperingData.details?.ela ? (
                             <>
                                 <div className={`tampering-status ${tamperingData.details.ela.tampered ? 'alert' : 'ok'}`}>
-                                    {tamperingData.details.ela.tampered ? '⚠️ Potential edits detected' : '✅ No significant edits detected'}
+                                    {tamperingData.details.ela.tampered
+                                        ? '⚠️ Potential edits detected'
+                                        : '✅ No significant edits detected'}
                                 </div>
                                 <div className="tampering-stats">
                                     <span>Mean Error: {tamperingData.details.ela.mean_error}</span>
@@ -196,7 +257,7 @@ function ResultDashboard({ result, onBack }) {
                             <>
                                 <div className={`tampering-status ${tamperingData.details.metadata.editor_detected ? 'alert' : 'ok'}`}>
                                     {tamperingData.details.metadata.editor_detected
-                                        ? `⚠️ Editor detected: ${tamperingData.details.metadata.editor_name}`
+                                        ? `⚠️ Editor: ${tamperingData.details.metadata.editor_name}`
                                         : '✅ No editing software detected'}
                                 </div>
                                 <div className="tampering-stats">
@@ -229,7 +290,7 @@ function ResultDashboard({ result, onBack }) {
                     </div>
                 </div>
 
-                {tamperingData.indicators && tamperingData.indicators.length > 0 && (
+                {tamperingData.indicators?.length > 0 && (
                     <div className="tampering-indicators">
                         <h4>🚧 Indicators</h4>
                         <ul>
@@ -247,10 +308,15 @@ function ResultDashboard({ result, onBack }) {
                     className="result-section glass-card"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.6 }}
+                    transition={{ delay: 0.5 }}
                 >
                     <h3 className="section-title">🔗 Verification URL</h3>
-                    <a href={result.steps.url_detection.url} target="_blank" rel="noopener noreferrer" className="verification-url">
+                    <a
+                        href={result.steps.url_detection.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="verification-url"
+                    >
                         {result.steps.url_detection.url}
                     </a>
                     <span className="url-source">Source: {result.steps.url_detection.source}</span>
