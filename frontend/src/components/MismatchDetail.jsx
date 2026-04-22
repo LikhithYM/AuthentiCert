@@ -115,10 +115,10 @@ function MismatchDetail({
 function ScoreBar({ label, value, primary = false }) {
     const pct = value != null ? Math.min(100, Math.max(0, value)) : null;
     const color =
-        pct == null       ? '#6b7280'
-        : pct >= 85       ? '#10b981'
-        : pct >= 60       ? '#f59e0b'
-        :                   '#ef4444';
+        pct == null       ? 'var(--text-muted)'
+        : pct >= 85       ? 'var(--success)'
+        : pct >= 60       ? 'var(--warning)'
+        :                   'var(--danger)';
 
     return (
         <div className={`score-bar-row ${primary ? 'primary' : ''}`}>

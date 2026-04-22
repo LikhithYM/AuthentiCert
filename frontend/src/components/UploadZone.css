@@ -1,5 +1,6 @@
 .upload-zone-wrapper {
-    margin: 2rem 0;
+    margin: 2rem auto;
+    max-width: 600px;
 }
 
 .upload-zone {
@@ -8,34 +9,21 @@
     text-align: center;
     position: relative;
     overflow: hidden;
-    transition: all var(--transition-normal);
+    transition: border-color var(--transition-normal), background-color var(--transition-normal);
     border: 2px dashed var(--border);
-    background: var(--bg-glass);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
 }
 
-.upload-zone::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(var(--accent-primary-rgb), 0.05), transparent);
-    opacity: 0;
-    transition: opacity var(--transition-normal);
-}
-
-.upload-zone:hover::before,
-.upload-zone.drag-active::before {
-    opacity: 1;
-}
-
+.upload-zone:hover,
 .upload-zone.drag-active {
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 4px var(--accent-glow);
-    transform: scale(1.01);
+    background: var(--bg-card-hover);
 }
 
 .upload-zone.drag-reject {
     border-color: var(--danger);
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+    background: var(--danger-bg);
 }
 
 .upload-zone.has-file {
@@ -51,21 +39,15 @@
 
 .upload-icon-wrapper {
     position: relative;
-    width: 72px;
-    height: 72px;
+    width: 64px;
+    height: 64px;
     margin: 0 auto 1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--accent-primary);
-}
-
-.upload-icon-ring {
-    position: absolute;
-    inset: 0;
-    border: 2px solid rgba(var(--accent-primary-rgb), 0.2);
+    background: var(--info-bg);
     border-radius: 50%;
-    animation: pulse-ring 3s ease-in-out infinite;
 }
 
 .upload-empty h3 {

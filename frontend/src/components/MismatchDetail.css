@@ -68,15 +68,15 @@
 }
 
 .mismatch-summary-banner {
-    background: rgba(239, 68, 68, 0.08);
+    background: var(--danger-bg);
     border-top: 1px solid rgba(239, 68, 68, 0.15);
-    color: #fca5a5;
+    color: var(--danger);
 }
 
 .mismatch-none-banner {
-    background: rgba(16, 185, 129, 0.08);
+    background: var(--success-bg);
     border-top: 1px solid rgba(16, 185, 129, 0.15);
-    color: #6ee7b7;
+    color: var(--success);
 }
 
 .mismatch-icon { font-size: 1rem; }
@@ -84,15 +84,15 @@
 .expand-btn {
     margin-left: auto;
     background: none;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #fca5a5;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
     padding: 3px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     font-size: 0.75rem;
     cursor: pointer;
     transition: background 0.15s;
 }
-.expand-btn:hover { background: rgba(239, 68, 68, 0.12); }
+.expand-btn:hover { background: var(--bg-card-hover); }
 
 /* ── Mismatch rows ──────────────────────────────────────────────── */
 .mismatch-rows {
@@ -135,9 +135,9 @@
 }
 
 .mismatch-uploaded {
-    color: #fca5a5;
+    color: var(--danger);
 }
-.mismatch-uploaded .mismatch-label { color: #f87171; }
+.mismatch-uploaded .mismatch-label { color: var(--danger); }
 
 .mismatch-arrow {
     color: var(--text-muted);
@@ -146,9 +146,9 @@
 }
 
 .mismatch-official {
-    color: #6ee7b7;
+    color: var(--success);
 }
-.mismatch-official .mismatch-label { color: #34d399; }
+.mismatch-official .mismatch-label { color: var(--success); }
 
 /* ── Full comparison table ──────────────────────────────────────── */
 .comp-table-wrapper {
@@ -190,14 +190,85 @@
     font-size: 0.75rem;
 }
 
-.val-bad  { color: #fca5a5; }
-.val-good { color: #6ee7b7; }
+.val-bad  { color: var(--danger); }
+.val-good { color: var(--success); }
 
 .match-cell, .sim-cell {
     text-align: center;
     font-weight: 600;
 }
 
-.match-yes { color: #10b981; font-size: 1rem; }
-.match-no  { color: #ef4444; font-size: 1rem; }
-.match-na  { color: #f59e0b; }
+.match-yes { color: var(--success); font-size: 1rem; }
+.match-no  { color: var(--danger); font-size: 1rem; }
+.match-na  { color: var(--warning); }
+
+/* ── Side-by-side comparison ────────────────────────────────────── */
+.side-by-side-comparison {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.comparison-card {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+}
+
+.comparison-card h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+}
+
+.comparison-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.comp-field {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.8125rem;
+    padding: 0.5rem;
+    background: var(--bg-card-hover);
+    border-radius: var(--radius-sm);
+}
+
+.comp-field.field-mismatch {
+    background: var(--danger-bg);
+    border: 1px solid var(--danger);
+}
+
+.comp-field.field-match {
+    background: var(--success-bg);
+    border: 1px solid var(--success);
+}
+
+.comp-field-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.comp-field-value {
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.comp-field-value-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

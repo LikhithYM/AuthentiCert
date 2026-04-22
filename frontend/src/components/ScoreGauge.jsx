@@ -48,9 +48,6 @@ function ScoreGauge({ score, status }) {
     }
 
     const getGlow = () => {
-        if (status === 'verified') return '0 0 20px rgba(16, 185, 129, 0.4)'
-        if (status === 'suspicious') return '0 0 20px rgba(245, 158, 11, 0.4)'
-        if (status === 'tampered') return '0 0 20px rgba(239, 68, 68, 0.4)'
         return 'none'
     }
 

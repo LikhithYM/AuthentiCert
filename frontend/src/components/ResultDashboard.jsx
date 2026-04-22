@@ -175,9 +175,9 @@ function ResultDashboard({ result, onBack }) {
                     <div className="image-comparison-row">
                         <div className="img-score-card">
                             <div className="img-score-value" style={{
-                                color: comparisonData.image_score >= 85 ? '#10b981'
-                                     : comparisonData.image_score >= 60 ? '#f59e0b'
-                                     : '#ef4444'
+                                color: comparisonData.image_score >= 85 ? 'var(--success)'
+                                     : comparisonData.image_score >= 60 ? 'var(--warning)'
+                                     : 'var(--danger)'
                             }}>
                                 {comparisonData.image_score?.toFixed(1)}%
                             </div>

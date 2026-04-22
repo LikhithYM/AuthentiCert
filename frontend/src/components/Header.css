@@ -6,8 +6,7 @@
     z-index: 100;
     background: var(--bg-card);
     border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-sm);
 }
 
 .header-inner {
@@ -26,10 +25,10 @@
 }
 
 .header-logo {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, var(--accent-primary), #8b5cf6);
+    background: var(--accent-primary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,9 +136,9 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.25rem 0.625rem;
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 9999px;
+    background: var(--info-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
     font-size: 0.8125rem;
     color: var(--text-primary);
     margin-right: 1.5rem;

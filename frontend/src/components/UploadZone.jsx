@@ -78,7 +78,6 @@ function UploadZone({ onUpload, onBulkUpload, mode = 'single' }) {
                             exit={{ opacity: 0, scale: 0.95 }}
                         >
                             <div className="upload-icon-wrapper">
-                                <div className="upload-icon-ring"></div>
                                 <Upload size={32} />
                             </div>
                             <h3>{mode === 'bulk' ? 'Drop multiple certificates here' : 'Drop your certificate here'}</h3>
