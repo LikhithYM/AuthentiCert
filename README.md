@@ -2,7 +2,7 @@
 
 AuthentiCert is a state-of-the-art, full-stack AI-powered platform designed to instantly and reliably verify the authenticity of educational and professional certificates. By combining advanced Optical Character Recognition (OCR), automated web scraping, structural image comparison, and AI-driven tampering detection, AuthentiCert provides a robust defense against credential fraud.
 
-![AuthentiCert UI Demo](https://via.placeholder.com/1000x500.png?text=AuthentiCert+Dashboard)
+
 
 ## ✨ Key Features
 
