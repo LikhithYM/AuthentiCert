@@ -77,46 +77,35 @@ function MismatchDetail({
                 </div>
             )}
 
-            {/* Full field comparison table */}
+            {/* Side-by-side Comparison View */}
             {expanded && compFields.length > 0 && (
-                <div className="comp-table-wrapper">
-                    <table className="comp-table">
-                        <thead>
-                            <tr>
-                                <th>Field</th>
-                                <th>Uploaded</th>
-                                <th>Official</th>
-                                <th>Match</th>
-                                <th>Similarity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <div className="side-by-side-comparison">
+                    <div className="comparison-card">
+                        <h4>Uploaded Certificate</h4>
+                        <div className="comparison-fields">
                             {compFields.map((f, i) => (
-                                <tr
-                                    key={i}
-                                    className={
-                                        f.match === false ? 'row-mismatch'
-                                        : f.match === true  ? 'row-match'
-                                        : ''
-                                    }
-                                >
-                                    <td className="field-name-cell">{f.field}</td>
-                                    <td className={f.match === false ? 'val-bad' : ''}>{f.uploaded}</td>
-                                    <td className={f.match === false ? 'val-good' : ''}>{f.official}</td>
-                                    <td className="match-cell">
-                                        {f.match === true  && <span className="match-yes">✓</span>}
-                                        {f.match === false && <span className="match-no">✗</span>}
-                                        {f.match === null  && <span className="match-na">?</span>}
-                                    </td>
-                                    <td className="sim-cell">
-                                        {f.similarity != null
-                                            ? `${Math.round(f.similarity * 100)}%`
-                                            : '—'}
-                                    </td>
-                                </tr>
+                                <div key={`up-${i}`} className={`comp-field ${f.match === false ? 'field-mismatch' : f.match === true ? 'field-match' : ''}`}>
+                                    <span className="comp-field-label">{f.field}</span>
+                                    <span className="comp-field-value">{f.uploaded || '—'}</span>
+                                </div>
                             ))}
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
+                    <div className="comparison-card">
+                        <h4>Official Record</h4>
+                        <div className="comparison-fields">
+                            {compFields.map((f, i) => (
+                                <div key={`off-${i}`} className={`comp-field ${f.match === false ? 'field-mismatch' : f.match === true ? 'field-match' : ''}`}>
+                                    <span className="comp-field-label">{f.field}</span>
+                                    <div className="comp-field-value-group">
+                                        <span className="comp-field-value">{f.official || '—'}</span>
+                                        {f.match === true && <span className="match-icon match-yes">✓</span>}
+                                        {f.match === false && <span className="match-icon match-no">✗</span>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

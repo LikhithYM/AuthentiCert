@@ -1,7 +1,27 @@
 .progress-tracker {
-    padding: 2rem 1.5rem;
+    padding: 2.5rem 1.5rem;
     max-width: 800px;
     margin: 0 auto;
+}
+
+.progress-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.progress-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.big-spinner {
+    color: var(--accent-primary);
 }
 
 .progress-steps {

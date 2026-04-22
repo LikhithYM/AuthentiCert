@@ -5,6 +5,10 @@ import './ProgressTracker.css'
 function ProgressTracker({ steps, currentStep }) {
     return (
         <div className="progress-tracker glass-card">
+            <div className="progress-header">
+                <Loader2 className="spinner big-spinner" size={24} />
+                <h2>Verifying certificates...</h2>
+            </div>
             <div className="progress-steps">
                 {steps.map((step, index) => {
                     const isCompleted = index < currentStep

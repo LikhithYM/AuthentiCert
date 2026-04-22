@@ -9,7 +9,10 @@ function Header({ theme, onToggleTheme, currentPage, role, onChangeRole, onNavig
                     <div className="header-logo">
                         <Shield size={22} />
                     </div>
-                    <span className="header-title">AuthentiCert</span>
+                    <div className="header-brand-group">
+                        <span className="header-title">AuthentiCert</span>
+                        <span className="header-tagline">“Verify Before You Trust”</span>
+                    </div>
                 </div>
 
                 <nav className="header-nav">

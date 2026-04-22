@@ -82,14 +82,15 @@ function UploadZone({ onUpload, onBulkUpload, mode = 'single' }) {
                                 <Upload size={32} />
                             </div>
                             <h3>{mode === 'bulk' ? 'Drop multiple certificates here' : 'Drop your certificate here'}</h3>
-                            <p>or click to browse files {mode === 'bulk' ? '(max 100)' : ''}</p>
+                            <p>or click to browse files</p>
                             <div className="upload-formats">
                                 <span className="format-badge">PDF</span>
                                 <span className="format-badge">JPG</span>
                                 <span className="format-badge">PNG</span>
-                                <span className="format-separator">•</span>
-                                <span className="format-limit">Max 16 MB</span>
                             </div>
+                            <p style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                Bulk upload supported (50+ files)
+                            </p>
                         </motion.div>
                     ) : (
                         <motion.div
